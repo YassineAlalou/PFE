@@ -1,0 +1,27 @@
+1- Create namespace dev-order if not already created 
+2- inject istio inside dev-order
+
+3- $ helm repo add bitnami https://charts.bitnami.com/bitnami
+
+4- deploy mongodb using helm chart :
+helm install mongo bitnami/mongodb --set persistence.size=256Mi,mongodbRootPassword=root,mongodbUsername=user,mongodbPassword=user123,mongodbDatabase=order-servicedb --namespace dev-order
+ 
+MongoDB can be accessed via port 27017 on the following DNS name from within your cluster:
+    mongo-mongodb.dev-order.svc.cluster.local
+
+To get the root password run:
+
+    export MONGODB_ROOT_PASSWORD=$(kubectl get secret --namespace dev-order mongo-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 --decode)    
+
+To get the password for "user" run:
+
+    export MONGODB_PASSWORD=$(kubectl get secret --namespace dev-order mongo-mongodb -o jsonpath="{.data.mongodb-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run --namespace dev-order mongo-mongodb-client --rm --tty -i --restart='Never' --image docker.io/bitnami/mongodb:4.2.8-debian-10-r7 --command -- mongo admin --host mongo-mongodb --authenticationDatabase admin -u root -p $MONGODB_ROOT_PASSWORD
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace dev-order svc/mongo-mongodb 27017:27017 &
+    mongo --host 127.0.0.1 --authenticationDatabase admin -p $MONGODB_ROOT_PASSWORD

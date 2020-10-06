@@ -1,0 +1,37 @@
+Based on https://github.com/bitnami/charts/tree/master/bitnami/redis/#installing-the-chart
+
+##### BITNAMI REDIS
+
+1- Create namespace dev-cart
+2- inject istio inside dev-cart
+
+3- $ helm repo add bitnami https://charts.bitnami.com/bitnami
+
+######################
+######################
+
+4- $ helm install redis bitnami/redis --set master.persistence.size=400M --set slave.persistence.size=400M --set usePassword=false --namespace dev-cart
+
+######################
+######################
+
+Redis can be accessed via port 6379 on the following DNS names from within your cluster:
+
+redis-master.dev-cart.svc.cluster.local for read/write operations
+redis-slave.dev-cart.svc.cluster.local for read-only operations
+
+
+
+To connect to your Redis server:
+
+1. Run a Redis pod that you can use as a client:
+   kubectl run --namespace dev-cart redis-client --rm --tty -i --restart='Never' --image docker.io/bitnami/redis:6.0.5-debian-10-r7 -- bash
+
+2. Connect using the Redis CLI:
+   redis-cli -h redis-master
+   redis-cli -h redis-slave
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace dev-cart svc/redis-master 6379:6379 &
+    redis-cli -h 127.0.0.1 -p 6379

@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: productcatalog
+  namespace: dev-productcatalog
+  labels:
+    app: productcatalog
+spec:
+  #type: NodePort
+  #type: LoadBalancer
+  type: ClusterIP
+  ports:
+  - port: 8090
+    targetPort: 8090
+    name: http
+  selector:
+    app: productcatalog
+    
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalog
+  namespace: dev-productcatalog
+  labels:
+    app: productcatalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productcatalog
+  template:
+    metadata:
+      labels:
+        app: productcatalog
+    spec:
+      containers:
+      - name: productcatalog
+        image: hchetoui/productcatalog:1.1
+        ports:
+        - containerPort: 8090
+        env:
+        - name: MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: db-conf
+              key: host
+        - name: MYSQL_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: db-conf
+              key: name
+        - name: MYSQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password

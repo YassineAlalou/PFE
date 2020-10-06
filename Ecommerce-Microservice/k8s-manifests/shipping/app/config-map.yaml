@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf
+  namespace: dev-shipping
+data:
+  mysql-host: mysql:3306  # host address of mysql server, we are using DNS of Service
+  mysql-db-name: shipping # name of the database for application
+  rabbitmq-exchange-name: sqli-exchange 
+  rabbitmq-routing-key: sqli.key
+  rabbitmq-host: mu-rabbit-rabbitmq.dev-rabbitmq-broker.svc.cluster.local # broker address
+  rabbitmq-port: "5672"

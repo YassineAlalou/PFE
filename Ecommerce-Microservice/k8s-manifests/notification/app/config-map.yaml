@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf
+  namespace: dev-notification
+data:
+  rabbitmq-exchange-name: sqli-exchange 
+  rabbitmq-queue-name: sqli-queue
+  rabbitmq-routing-key: sqli.#
+  rabbitmq-host: mu-rabbit-rabbitmq.dev-rabbitmq-broker.svc.cluster.local # Change adress by your brokers address, if you used dev-rabbitmq-broker as namespace, it will be the same address
+  rabbitmq-port: "5672"

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+  namespace: dev-notification
+  labels:
+    app: notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+      - name: notification
+        image: hchetoui/notification:1.0
+        env:
+        - name: GMAIL_SENDER_USER
+          valueFrom:
+            secretKeyRef:
+              name: notif-secret
+              key: gmail-sender-user
+        - name: GMAIL_SENDER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: notif-secret
+              key: gmail-sender-password
+        - name: RABBITMQ_EXCHANGE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: conf
+              key: rabbitmq-exchange-name
+        - name: RABBITMQ_QUEUE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: conf
+              key: rabbitmq-queue-name
+        - name: RABBITMQ_ROUTING_KEY 
+          valueFrom:
+            configMapKeyRef:
+              name: conf
+              key: rabbitmq-routing-key
+        - name: RABBITMQ_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: conf
+              key: rabbitmq-host
+        - name: RABBITMQ_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: conf
+              key: rabbitmq-port
+        - name: RABBITMQ_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: notif-secret
+              key: rabbitmq-username
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: notif-secret
+              key: rabbitmq-password

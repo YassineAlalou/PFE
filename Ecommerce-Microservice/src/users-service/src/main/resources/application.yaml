@@ -1,0 +1,27 @@
+server:
+  port: 8091
+spring:
+  application:
+    name: USERS-SERVICE
+  datasource:
+    url: jdbc:mysql://${DB_HOST}/${DB_NAME}?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    show-sql: true
+
+    hibernate:
+      ddl-auto: create
+
+jwt:
+  essuer: ${JWT_ISSUER}
+
+  audience: ${JWT_AUDIENCE}
+
+

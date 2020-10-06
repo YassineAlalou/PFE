@@ -1,0 +1,183 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: store-gateway
+  namespace: dev-configs
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-product
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'products.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8090
+        host: productcatalog.dev-productcatalog.svc.cluster.local
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-cart
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'cart.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8092
+        host: cart.dev-cart.svc.cluster.local
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-shipping
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'shipping.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8093
+        host: shipping.dev-shipping.svc.cluster.local
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-order
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'order.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8095
+        host: order.dev-order.svc.cluster.local
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-user
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'user.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8091
+        host: user.dev-user.svc.cluster.local
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-payment
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'payment.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8092
+        host: payment.dev-payment.svc.cluster.local
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-checkout
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'checkout.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        port:
+          number: 8094
+        host: checkout.dev-checkout.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: virtual-service-reviews
+  namespace: dev-configs
+spec:
+  hosts:
+    - 'reviews.sqli.com'
+  gateways:
+    - store-gateway
+  http:
+  - route:
+    - destination:
+        host: review.dev-review.svc.cluster.local
+        subset: v1
+      weight: 90
+    - destination:
+        host: review.dev-review.svc.cluster.local
+        subset: v2
+      weight: 10
+    timeout: 20s
+    retries:
+      attempts: 3
+      perTryTimeout: 5s

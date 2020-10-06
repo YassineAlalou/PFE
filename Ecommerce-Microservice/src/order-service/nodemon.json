@@ -1,0 +1,8 @@
+{
+    "watch": ["src"],
+    "ext": "ts",
+    "exec": "ts-node ./api/server.ts",
+    "env":{
+        "MONGO_URl":"test"
+    }
+}

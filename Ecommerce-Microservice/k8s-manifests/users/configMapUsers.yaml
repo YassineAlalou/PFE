@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-db-conf
+  namespace: dev-user
+data:
+  host: mysql:3306
+  dbname: userServicedb

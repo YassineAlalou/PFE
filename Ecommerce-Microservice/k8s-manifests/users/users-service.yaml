@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: user-svcacc  
+  namespace: dev-user
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+  namespace: dev-user
+  labels:
+    name: user
+spec:
+  #type: LoadBalancer # for testing, Not recommended for production
+  type: ClusterIP
+  ports:
+    - port: 8091
+      targetPort: 8091
+      name: http
+  selector:
+    app: user
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: user
+    app.kubernetes.io/part-of: dev-user
+    app.kubernetes.io/version: v1
+  name: user
+  namespace: dev-user
+spec:
+  selector:
+    matchLabels:
+      app: user
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+        - name: user
+          image: louarhou/users-service:v5
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8091
+          env:   
+            - name: DB_HOST  
+              valueFrom:
+                configMapKeyRef:
+                  name: user-db-conf
+                  key: host
+            - name: DB_NAME  
+              valueFrom:
+                configMapKeyRef:
+                  name: user-db-conf
+                  key: dbname
+            - name: DB_USERNAME  
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-credentials
+                  key: rootname
+            - name: DB_PASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-credentials
+                  key: rootpassword
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-credentials
+                  key: jwt_essuer
+            - name: JWT_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-credentials
+                  key: jwt_audience
+      serviceAccountName: user-svcacc  

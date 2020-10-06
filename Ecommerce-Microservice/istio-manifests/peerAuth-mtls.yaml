@@ -1,0 +1,111 @@
+#Review
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: review-pa
+  namespace: dev-review
+spec:
+  selector:
+    matchLabels:
+      app: review
+  mtls:
+    mode: STRICT
+---
+#Product Catalog 
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: productcatalog-pa
+  namespace: dev-productcatalog
+spec:
+  selector:
+    matchLabels:
+      app: productcatalog
+  mtls:
+    mode: STRICT
+---
+#Cart
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: cart-pa
+  namespace: dev-cart
+spec:
+  selector:
+    matchLabels:
+      app: cart
+  mtls:
+    mode: STRICT
+---
+#Shipping
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: shipping-pa
+  namespace: dev-shipping
+spec:
+  selector:
+    matchLabels:
+      app: shipping
+  mtls:
+    mode: STRICT
+---
+#Order
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: order-pa
+  namespace: dev-order
+spec:
+  selector:
+    matchLabels:
+      app: order
+  mtls:
+    mode: STRICT
+---
+#User
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: user-pa
+  namespace: dev-user
+spec:
+  selector:
+    matchLabels:
+      app: user
+  mtls:
+    mode: STRICT
+---
+#Payment
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: payment-pa
+  namespace: dev-payment
+spec:
+  selector:
+    matchLabels:
+      app: payment
+  mtls:
+    mode: STRICT
+---
+#Checkout
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: checkout-pa
+  namespace: dev-checkout
+spec:
+  selector:
+    matchLabels:
+      app: checkout
+  mtls:
+    mode: STRICT

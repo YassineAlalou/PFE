@@ -1,0 +1,22 @@
+1- Get ubuntu pods name:
+------------------------
+$ kubectl get pods
+NAME                     READY   STATUS    RESTARTS   AGE
+debug-5f7d54889f-vcb2j   1/1     Running   0          3m47s
+------------------------------------------------------------
+
+2- Execute bash
+---------------
+$ kubectl exec -it debug-5f7d54889f-vcb2j bash
+------------------------------------------------------------
+
+3- Install curl to test our services
+------------------------------------
+root@debug-5f7d54889f-vcb2j:/$ apt update
+root@debug-5f7d54889f-vcb2j:/$ apt install curl
+------------------------------------------------------------
+
+4- Test:
+--------
+root@debug-57f97f665b-pj6ww:/# curl cart.dev-cart.svc.cluster.local:8092/carts?customer=1 ; echo
+{"customerId":1,"orderProducts":[]}

@@ -1,0 +1,164 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Placed Order Management Service",
+      "description": "After that payment order process was succefulley, we need to place and save the order",
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "tags": [
+      {
+        "name": "Orders",
+        "description": "API for orders in the ecomemrce microservice"
+      }
+    ],
+    "schemes": [
+      "http"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/orders": {
+        "post": {
+          "tags": [
+            "orders"
+          ],
+          "description": "Place new order in system",
+          "parameters": [
+            {
+              "name": "order",
+              "in": "body",
+              "description": "Order that we want to save",
+              "schema": {
+                "$ref": "#/definitions/Order"
+              }
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "New Order is created",
+              "schema": {
+                "$ref": "#/definitions/Order"
+              }
+            }
+          }
+        },
+        "get": {
+          "tags": [
+            "orders"
+          ],
+          "summary": "find all orders in system",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/Orders"
+              }
+            }
+          }
+        }
+      },
+      "/orders/{orderId}": {
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "ID of order that we want to find",
+            "type": "string"
+          }
+        ],
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get order with given ID",
+          "responses": {
+            "200": {
+              "description": "Order is found",
+              "schema": {
+                "$ref": "#/definitions/Order"
+              }
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete order with given ID",
+          "tags": [
+            "Orders"
+          ],
+          "responses": {
+            "200": {
+              "description": "Order is deleted",
+              "schema": {
+                "$ref": "#/definitions/Order"
+              }
+            }
+          }
+        }
+      },
+      "/orders/{orderId}/items": {
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "ID of order that we want to find its items",
+            "type": "string"
+          }
+        ],
+        "get": {
+          "tags": [
+            "items"
+          ],
+          "summary": "Get order with given ID",
+          "responses": {
+            "200": {
+              "description": "Order is found",
+              "schema": {
+                "$ref": "#/definitions/items"
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Order": {
+        "required": [
+          "_id",
+          "creationDate",
+          "customerId",
+          "orderProducts"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "uniqueItems": true
+          },
+          "customerId": {
+            "type": "Number"
+          },
+          "orderProducts": {
+            "type": "Array<OrderItem>()"
+          }
+        }
+      },
+      "Orders": {
+        "type": "array",
+        "$ref": "#/definitions/Order"
+      }
+    }
+  }

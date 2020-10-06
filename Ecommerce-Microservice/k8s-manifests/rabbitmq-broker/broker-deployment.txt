@@ -1,0 +1,27 @@
+1- install helm
+2- create namespace dev-rabbitmq-broker
+3- inject istio in namespace:
+   $ kubectl label namespace dev-rabbitmq-broker istio-injection=enabled
+3- Deploy Rabbitmq broker:
+   $ helm install mu-rabbit --set rabbitmq.username=admin,rabbitmq.password=admin,rabbitmq.erlangCookie=secretcookie --namespace dev-rabbitmq-broker stable/rabbitmq
+   $ helm install mu-rabbit stable/rabbitmq --namespace dev-rabbitmq-broker
+	helm install mu-rabbit --set auth.username=admin,auth.password=admin --namespace dev-rabbitmq-broker bitnami/rabbitmq
+4- Result:
+Credentials:
+    Username      : user
+    echo "Password      : $(kubectl get secret --namespace dev-rabbitmq-broker mu-rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)"
+    echo "ErLang Cookie : $(kubectl get secret --namespace dev-rabbitmq-broker mu-rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)"
+
+RabbitMQ can be accessed within the cluster on port  at mu-rabbit-rabbitmq.dev-rabbitmq-broker.svc.cluster.local
+
+To access for outside the cluster, perform the following steps:
+
+To Access the RabbitMQ AMQP port:
+
+    kubectl port-forward --namespace dev-rabbitmq-broker svc/mu-rabbit-rabbitmq 5672:5672
+    echo "URL : amqp://127.0.0.1:5672/"
+
+To Access the RabbitMQ Management interface:
+
+    kubectl port-forward --namespace dev-rabbitmq-broker svc/mu-rabbit-rabbitmq 15672:15672
+    echo "URL : http://127.0.0.1:15672/"

@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mysql-svcacc
+  namespace: dev-user
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: dev-user
+  labels:
+    app: mysql
+    tier: database
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:       
+    app: mysql
+    tier: database
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim 
+  namespace: dev-user
+  labels:
+    app: mysql
+    tier: database
+spec:
+  accessModes:
+    - ReadWriteOnce   
+  resources:
+    requests:
+      storage: 256Mi    
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: dev-user
+  labels:
+    app: mysql
+    tier: database
+spec:
+  selector: 
+    matchLabels:
+      app: mysql
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: 
+        app: mysql
+        tier: database
+    spec:
+      containers:
+        - image: mysql:5.7
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--ignore-db-dir=lost+found" 
+          name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-credentials 
+                  key: rootpassword   
+            - name: MYSQL_USER 
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-credentials
+                  key: username
+            - name: MYSQL_PASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-credentials
+                  key: userpassword
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-credentials
+                  key: dbname
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:        
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql 
+      volumes:
+        - name: mysql-persistent-storage 
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+      serviceAccountName: mysql-svcacc

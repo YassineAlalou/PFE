@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: order-svcacc
+  namespace: dev-order
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+  namespace: dev-order
+spec:
+  selector:
+    app: order
+  ports:
+    - port: 8095
+      targetPort: 8095
+      protocol: TCP
+  type: ClusterIP
+  #type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: order
+    app.kubernetes.io/part-of: dev-order
+    app.kubernetes.io/version: v1
+  name: order
+  namespace: dev-order
+spec:
+  selector:
+    matchLabels:
+      app: order
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: louarhou/orders-service:v4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8095
+          env:   
+            - name: MONGO_USERNAME 
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: mongouser
+            - name: MONGO_PASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: mongopass 
+            - name: MONGO_HOST  
+              valueFrom:
+                configMapKeyRef:
+                  name: order-db-conf 
+                  key: host
+            - name: MONGO_PORT 
+              valueFrom:
+                configMapKeyRef:
+                  name: order-db-conf 
+                  key: port
+            - name: MONGO_DB 
+              valueFrom:
+                configMapKeyRef:
+                  name: order-db-conf
+                  key: dbname
+      serviceAccountName: order-svcacc

@@ -1,0 +1,4 @@
+STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+
+server:
+  port: 8092

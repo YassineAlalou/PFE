@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: payment-svcacc  
+  namespace: dev-payment
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: payment
+  namespace: dev-payment
+  labels:
+    name: payment
+spec:
+  ports:
+    - port: 8092
+      targetPort: 8092
+      name: http
+  selector:
+    app: payment
+  # type: LoadBalancer
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: payment
+    app.kubernetes.io/part-of: dev-payment
+    app.kubernetes.io/version: v1
+  name: payment
+  namespace: dev-payment
+spec:
+  selector:
+    matchLabels:
+      app: payment
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+        - name: payment
+          image: louarhou/payment-service:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8092
+          env:   
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: payment-credentials
+                  key: stripe_pv_key
+      serviceAccountName: payment-svcacc  

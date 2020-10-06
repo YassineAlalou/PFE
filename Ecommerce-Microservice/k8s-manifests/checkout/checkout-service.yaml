@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: checkout-svcacc  
+  namespace: dev-checkout
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout
+  namespace: dev-checkout
+  labels:
+    name: checkout
+spec:
+  ports:
+    - port: 8094
+      targetPort: 8094
+      name: http
+  selector:
+    app: checkout
+  #type: NodePort
+  #type: LoadBalancer  # for testing, Not recommended for production
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: checkout
+    app.kubernetes.io/part-of: dev-checkout
+    app.kubernetes.io/version: v1
+  name: checkout
+  namespace: dev-checkout
+spec:
+  selector:
+    matchLabels:
+      app: checkout
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      containers:
+        - name: checkout
+          image: louarhou/checkout-service:v4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8094
+          env:   
+            - name: ORDERS_URL  
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-hosts-conf 
+                  key: order_host
+            - name: PAYMENT_URL 
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-hosts-conf 
+                  key: payment_host
+            - name: CARTS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-hosts-conf 
+                  key: cart_host
+            - name: SHIPPING_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-hosts-conf 
+                  key: shipping_host
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-hosts-conf 
+                  key: rabbitmq_host
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: checkout-hosts-conf 
+                  key: rabbitmq_port
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq_username
+            - name: RABBITMQ_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq_password
+            - name: EXCHANGE
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq_exchange
+            - name: ROUTING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq_routingkey
+            - name: QUEUE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq_queuename
+      serviceAccountName: checkout-svcacc 

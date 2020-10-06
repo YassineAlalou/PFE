@@ -1,0 +1,27 @@
+order:
+  url: ${ORDERS_URL}
+
+payment:
+  url: ${PAYMENT_URL}
+
+cart:
+  url: ${CARTS_URL}
+
+shipping:
+  url: ${SHIPPING_URL}
+
+server:
+  port: 8094
+
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+rabbitmq:
+  exchange: ${EXCHANGE}
+  routing_key: ${ROUTING_KEY}
+  queue: ${QUEUE_NAME}
+

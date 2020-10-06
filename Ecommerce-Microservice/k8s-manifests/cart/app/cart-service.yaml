@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  namespace: dev-cart
+  labels:
+    app: cart
+spec:
+  #type: NodePort
+  #type: LoadBalancer
+  type: ClusterIP
+  ports:
+  - port: 8092
+    targetPort: 8092
+    name: http
+  selector:
+    app: cart
+    
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  namespace: dev-cart
+  labels:
+    app: cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+      - name: cart
+        image: hchetoui/cart:1.1
+        ports:
+        - containerPort: 8092
+        env:
+        - name: REDIS_HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              name: redis-conf
+              key: redis-host
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: redis-conf
+              key: redis-port
+        - name: REDIS_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              name: redis-conf
+              key: redis-expiration
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: redis-password

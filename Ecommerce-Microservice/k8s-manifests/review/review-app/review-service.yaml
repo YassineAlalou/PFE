@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: review
+  namespace: dev-review
+  labels:
+    app: review
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8091
+    targetPort: 8091
+    name: http
+  selector:
+    app: review
+    

@@ -1,0 +1,14 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "RequestAuthentication"
+metadata:
+  name: "jwt-auth-request"
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  jwtRules:
+  - issuer: "ecommerce@sqli.com"
+    jwksUri: https://raw.githubusercontent.com/YassineAlalou/JWKS/master/jwks.json
+
+  

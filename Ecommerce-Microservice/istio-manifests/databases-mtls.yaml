@@ -1,0 +1,99 @@
+#Review
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: database-pa
+  namespace: dev-review
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  mtls:
+    mode: STRICT
+---
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: database-dr
+  namespace: dev-review
+spec:
+  host: mysql.dev-review.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+#Product Catalog 
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: database-pa
+  namespace: dev-productcatalog
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  mtls:
+    mode: STRICT
+---
+apiVersion: "networking.istio.io/v1alpha3"
+kind: DestinationRule
+metadata:
+  name: database-dr
+  namespace: dev-productcatalog
+spec:
+  host: mysql.dev-productcatalog.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+#Shipping
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: database-pa
+  namespace: dev-shipping
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  mtls:
+    mode: STRICT
+---
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: database-dr
+  namespace: dev-shipping
+spec:
+  host: mysql.dev-shipping.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+#User
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: database-pa
+  namespace: dev-user
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  mtls:
+    mode: STRICT
+---
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: database-dr
+  namespace: dev-user
+spec:
+  host: mysql.dev-user.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
